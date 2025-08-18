@@ -21,3 +21,11 @@ target_link_libraries(${CURRENT_TEST_NAME}
 
 include("../../cmake/util/shader.cmake")
 compileShaderToTargetDir(${CURRENT_TEST_NAME} "shader" "shader")
+
+if (MSVC)
+    add_custom_command(
+            TARGET ${CURRENT_TEST_NAME} POST_BUILD
+            COMMAND "EDITBIN" "/SUBSYSTEM:WINDOWS" $<TARGET_FILE:${CURRENT_TEST_NAME}>
+            VERBATIM
+    )
+endif ()
