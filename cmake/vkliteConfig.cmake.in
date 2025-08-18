@@ -1,0 +1,69 @@
+# ======================================================
+#  Vklite CMake 配置文件
+# ======================================================
+
+# ======================================================
+#  头文件搜索
+# ======================================================
+
+# 获取没有 ../.. 相对路径标记的绝对路径
+# xxx/dist/vklite/cmake/VkliteConfig.cmake
+get_filename_component(VKLITE_CONFIG_PATH "${CMAKE_CURRENT_LIST_DIR}" REALPATH)
+message("VKLITE_CONFIG_PATH:${VKLITE_CONFIG_PATH}")
+
+# 获取 xxx/dist/vklite 目录
+# 1 xxx/dist/vklite/cmake/CalcConfig.cmake => xxx/dist/vklite/cmake
+get_filename_component(VKLITE_INSTALL_PATH "${VKLITE_CONFIG_PATH}" PATH)
+# 2 xxx/dist/vklite/cmake => xxx/dist/vklite
+get_filename_component(VKLITE_INSTALL_PATH "${VKLITE_INSTALL_PATH}" PATH)
+
+
+set(Vklite_BUILD_TYPE "@Vklite_BUILD_TYPE@")
+# 搜索头文件, 添加至全局变量 Vklite_INCLUDE_DIRS
+# xxx/dist/vklite/cmake/include
+set(VKLITE_INCLUDE_COMPONENTS "${VKLITE_INSTALL_PATH}/include")
+set(Vklite_INCLUDE_DIRS "")
+foreach (include_component ${VKLITE_INCLUDE_COMPONENTS})
+    message("include_component:${include_component}")
+    # 转换为绝对路径
+    get_filename_component(include_component_real_path "${include_component}" REALPATH)
+
+    if (NOT EXISTS "${include_component_real_path}")
+        # 目录不存在,则报警告
+        message(WARNING "Vklite: Include directory doesn't exist: '${include_component}'. Calc installation may be broken. Skip...")
+    else ()
+        # 添加到全局属性中
+        list(APPEND Vklite_INCLUDE_DIRS "${include_component_real_path}")
+    endif ()
+endforeach ()
+unset(include_component_real_path)
+
+
+# ======================================================
+# 库文件搜索
+# ======================================================
+# 包含导出配置的 *.cmake 文件
+include(${CMAKE_CURRENT_LIST_DIR}/VkliteModule.cmake)
+
+# 添加至全局变量 Vklite_LIBS
+set(VKLITE_LIB_COMPONENTS vklite)
+foreach (lib_component ${VKLITE_LIB_COMPONENTS})
+    message("list#APPEND Vklite_LIBS: ${lib_component}")
+    list(APPEND Vklite_LIBS "${lib_component}")
+endforeach ()
+
+# ======================================================
+# 搜寻的结果、状态
+# ======================================================
+include(FindPackageHandleStandardArgs)
+message("VKLITE_INSTALL_PATH:${VKLITE_INSTALL_PATH}")
+message("Vklite_INCLUDE_DIRS:${Vklite_INCLUDE_DIRS}")
+message("Vklite_LIBS:${Vklite_LIBS}")
+find_package_handle_standard_args(
+        Vklite
+        # 注意这里要传入变量的名称 "VKLITE_INSTALL_PATH" 而不是变量的值,
+        # 如 ${VKLITE_INSTALL_PATH} 或者 "path/to/include" 都是错误的
+
+        REQUIRED_VARS VKLITE_INSTALL_PATH Vklite_INCLUDE_DIRS Vklite_LIBS
+)
+message("Vklite_FOUND:${Vklite_FOUND}")
