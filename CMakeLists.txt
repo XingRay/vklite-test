@@ -24,7 +24,7 @@ option(BUILD_TEST "build test" ON)
 
 # vulkan sdk
 # https://vulkan.org/
-set(vulkan_install_dir "D:/develop/vulkan/VulkanSDK/1.3.296.0" CACHE STRING "vulkan install dir")
+set(vulkan_install_dir "D:/develop/vulkan/VulkanSDK/1.4.321.1" CACHE STRING "vulkan install dir")
 
 # Vulkan-Headers
 # https://github.com/KhronosGroup/Vulkan-Headers
